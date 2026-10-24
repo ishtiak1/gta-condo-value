@@ -1,0 +1,337 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>GTA Condo Value</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: form of grouped fieldsets on the left, a sticky appraisal slip on the right; one column on phones */
+:root{
+  --bg:#f3f5f7; --surface:#ffffff; --ink:#15212b; --muted:#5b6b78; --line:#d8dfe5;
+  --accent:#0f5e86; --accent-soft:#e2eef5; --up:#1d7a4c; --down:#b4442f;
+  --display:"Bricolage Grotesque",ui-sans-serif,system-ui,sans-serif;
+  --body:"IBM Plex Sans",ui-sans-serif,system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0f161c; --surface:#17212a; --ink:#e6edf2; --muted:#93a4b1; --line:#2a3743;
+  --accent:#5fb3dc; --accent-soft:#1a3242; --up:#5cc995; --down:#ec8a75; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f161c; --surface:#17212a; --ink:#e6edf2; --muted:#93a4b1; --line:#2a3743;
+  --accent:#5fb3dc; --accent-soft:#1a3242; --up:#5cc995; --down:#ec8a75; color-scheme:dark}
+*{box-sizing:border-box}
+html{color-scheme:light}
+body{margin:0}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font:15px/1.5 var(--body)}
+.wrap{max-width:1180px;margin:0 auto;padding-block:28px 56px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+header{display:flex;flex-wrap:wrap;align-items:end;justify-content:space-between;gap:12px;margin-bottom:22px}
+h1{font:800 clamp(28px,4vw,40px)/1.05 var(--display);margin:0;letter-spacing:-.01em;text-wrap:balance}
+.sub{color:var(--muted);margin:6px 0 0;max-width:62ch}
+.grid{display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:24px;align-items:start}
+@media (max-width:900px){.grid{grid-template-columns:minmax(0,1fr)}}
+fieldset{border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:16px 18px 18px;margin:0 0 16px;min-width:0}
+legend{font:600 12px/1 var(--body);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding:0 6px}
+.row{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px 14px}
+label{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--muted);min-width:0}
+label.check{flex-direction:row;align-items:center;gap:8px;color:var(--ink);font-size:14px;padding-top:18px}
+input,select{font:15px var(--body);color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:8px 10px;width:100%;min-width:0}
+input[type=checkbox]{width:18px;height:18px;accent-color:var(--accent)}
+input:focus-visible,select:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.hint{font-size:12px;color:var(--muted);margin:10px 0 0}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+/* result slip */
+.slip{position:sticky;top:calc(env(safe-area-inset-top,0px) + 16px);background:var(--surface);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+@media (max-width:900px){.slip{position:static}}
+.slip-head{background:var(--accent-soft);padding:18px 20px 16px;border-bottom:1px dashed var(--line)}
+.eyebrow{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.value{font:800 clamp(34px,5vw,44px)/1.05 var(--display);color:var(--accent);margin:4px 0 2px;font-variant-numeric:tabular-nums}
+.range{font:500 14px var(--mono);color:var(--ink)}
+.bar{position:relative;height:8px;border-radius:4px;background:var(--line);margin:14px 0 4px}
+.bar span{position:absolute;top:-4px;width:3px;height:16px;background:var(--accent);border-radius:2px;left:50%}
+.bar-l{display:flex;justify-content:space-between;font:12px var(--mono);color:var(--muted)}
+.slip-body{padding:14px 20px 18px}
+.kv{display:grid;grid-template-columns:1fr auto;gap:6px 12px;font-size:14px;margin:0}
+.kv dt{color:var(--muted)} .kv dd{margin:0;text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums}
+h3{font:600 12px/1 var(--body);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:18px 0 8px}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+td{padding:5px 0;border-top:1px solid var(--line);vertical-align:top}
+td:last-child{text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap;padding-left:10px}
+.pos{color:var(--up)} .neg{color:var(--down)}
+.conf{display:inline-block;font-size:12px;font-weight:600;padding:3px 9px;border-radius:999px;border:1px solid currentColor;margin-top:10px}
+/* comps */
+.tablewrap{overflow-x:auto}
+.comps{min-width:620px}
+.comps td:first-child{width:34%}
+.comps input[type=checkbox]{width:18px}
+.comps th{font:600 11px var(--body);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);text-align:left;padding:0 6px 6px 0}
+.comps td{border-top:none;padding:3px 6px 3px 0;text-align:left;font-family:var(--body)}
+.comps td:last-child{font-family:var(--mono);text-align:right}
+.comps input{padding:6px 8px;font-size:14px}
+button{font:500 14px var(--body);border-radius:6px;border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:7px 12px;cursor:pointer}
+button:hover{border-color:var(--accent);color:var(--accent)}
+button.x{padding:4px 9px;color:var(--muted)}
+.btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.note{font-size:12.5px;color:var(--muted);line-height:1.55;margin-top:22px;max-width:80ch}
+.note a{color:var(--accent)}
+@media (prefers-reduced-motion:no-preference){.value{transition:color .2s}}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <div>
+      <h1>GTA Condo Value</h1>
+      <p class="sub">Estimate a resale condo apartment's market value anywhere in the Greater Toronto Area from regional $/sq ft benchmarks, unit features, and your own recent sales comparables.</p>
+    </div>
+    <button id="reset" type="button">Load example unit</button>
+  </header>
+
+  <div class="grid">
+    <form id="f" onsubmit="return false">
+      <fieldset>
+        <legend>Location</legend>
+        <div class="row">
+          <label>Area / neighbourhood<select id="area"></select></label>
+          <label>Benchmark $/sq ft <input id="psf" type="number" step="5" min="100" class="mono"></label>
+        </div>
+        <p class="hint">Benchmarks are for the unit alone, with parking and lockers added separately. The benchmark fills in from the area you pick. Overwrite it with the latest figure from TRREB's monthly Market Watch or recent sold listings for the building.</p>
+      </fieldset>
+
+      <fieldset>
+        <legend>Unit</legend>
+        <div class="row">
+          <label>Interior size (sq ft)<input id="sqft" type="number" min="250" step="10" class="mono"></label>
+          <label>Bedrooms<select id="beds"><option value="0">Studio</option><option value="1">1</option><option value="2">2</option><option value="3">3+</option></select></label>
+          <label>Bathrooms<select id="baths"><option value="1">1</option><option value="1.5">1.5</option><option value="2">2</option><option value="3">3+</option></select></label>
+          <label class="check"><input id="den" type="checkbox"> Den</label>
+        </div>
+        <div class="row" style="margin-top:12px">
+          <label>Floor<input id="floor" type="number" min="1" max="90" class="mono"></label>
+          <label>View / exposure<select id="view">
+            <option value="0.04">Unobstructed lake or skyline</option>
+            <option value="0.015">Open south or west</option>
+            <option value="0" selected>Typical</option>
+            <option value="-0.03">Obstructed / faces another tower</option>
+          </select></label>
+          <label>Outdoor space<select id="outdoor">
+            <option value="-0.03">None</option>
+            <option value="0" selected>Balcony</option>
+            <option value="0.05">Large terrace</option>
+          </select></label>
+          <label>Condition<select id="cond">
+            <option value="0.04">Recently renovated</option>
+            <option value="0" selected>Average / original</option>
+            <option value="-0.06">Needs updating</option>
+          </select></label>
+        </div>
+        <div class="row" style="margin-top:4px">
+          <label class="check"><input id="ph" type="checkbox"> Penthouse / sub-PH level</label>
+          <label class="check"><input id="corner" type="checkbox"> Corner unit</label>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Building &amp; extras</legend>
+        <div class="row">
+          <label>Year built<input id="year" type="number" min="1960" max="2030" class="mono"></label>
+          <label>Monthly maintenance ($)<input id="fee" type="number" min="0" step="10" class="mono"></label>
+          <label>Parking spaces<select id="park"><option value="0">0</option><option value="1">1</option><option value="2">2</option></select></label>
+          <label>Lockers<select id="locker"><option value="0">0</option><option value="1">1</option></select></label>
+        </div>
+        <div class="row" style="margin-top:4px">
+          <label class="check"><input id="amen" type="checkbox"> Full amenities (gym, pool, concierge)</label>
+          <label class="check"><input id="transit" type="checkbox"> Steps to subway, LRT or GO</label>
+        </div>
+        <p class="hint">Fees are compared with a typical $0.75/sq ft per month. Higher fees lower what buyers will pay, at about $20,000 for every extra $100 a month.</p>
+      </fieldset>
+
+      <fieldset>
+        <legend>Recent comparables (optional)</legend>
+        <div class="tablewrap">
+          <table class="comps">
+            <thead><tr><th>Address / unit</th><th>Sold price ($)</th><th>Sq ft</th><th>Months ago</th><th>Parking</th><th>$/sq ft</th><th></th></tr></thead>
+            <tbody id="compRows"></tbody>
+          </table>
+        </div>
+        <div class="row" style="margin-top:10px">
+          <label>Market change since sale (% per month)<input id="trend" type="number" step="0.1" class="mono"></label>
+        </div>
+        <div class="btns"><button id="addComp" type="button">Add comparable</button></div>
+        <p class="hint">Tick Parking when a sale included a spot, so its value is taken out before the $/sq ft is compared. Use sales of similar units from the same or nearby buildings in the last 6 months. With 3 or more comparables, they carry 70% of the price per sq ft and the area benchmark carries 30%.</p>
+      </fieldset>
+    </form>
+
+    <aside class="slip" aria-live="polite">
+      <div class="slip-head">
+        <div class="eyebrow">Estimated market value</div>
+        <div class="value" id="out-val">$0</div>
+        <div class="range" id="out-range"></div>
+        <div class="bar"><span></span></div>
+        <div class="bar-l"><span id="out-lo"></span><span id="out-hi"></span></div>
+        <span class="conf" id="out-conf"></span>
+      </div>
+      <div class="slip-body">
+        <dl class="kv">
+          <dt>Effective $/sq ft</dt><dd id="out-psf"></dd>
+          <dt>Price per sq ft used</dt><dd id="out-base"></dd>
+          <dt>Est. land transfer tax</dt><dd id="out-ltt"></dd>
+        </dl>
+        <h3>How the estimate is built</h3>
+        <table><tbody id="out-steps"></tbody></table>
+      </div>
+    </aside>
+  </div>
+
+  <p class="note">This is an estimate for planning, not an appraisal. Area benchmarks are approximate 2025–26 resale condo apartment averages compiled from public TRREB market reports and sold data, and they move every month. Check current figures in <a href="https://trreb.ca/market-data/market-watch/" target="_blank" rel="noopener">TRREB Market Watch</a> and confirm a value with a REALTOR® CMA or a licensed appraiser before buying, selling or refinancing. Land transfer tax uses Ontario rates plus the Toronto municipal tax for Toronto areas, before first-time buyer rebates.</p>
+</div>
+
+<script>
+const AREAS=[
+ ["Toronto",[
+  ["Downtown core (C01 · Entertainment, Financial, CityPlace)",985,true],
+  ["King West / Liberty Village / Queen West",950,true],
+  ["Yorkville / Annex (C02)",1255,true],
+  ["St. Lawrence / Distillery / Corktown",930,true],
+  ["Yonge & Eglinton / Midtown",930,true],
+  ["Leslieville / Riverside / East End",855,true],
+  ["North York Centre / Yonge & Sheppard",835,true],
+  ["Don Mills / Bayview Village",820,true],
+  ["Etobicoke · Humber Bay Shores / Mimico",800,true],
+  ["Etobicoke · Islington-City Centre West",765,true],
+  ["Scarborough",670,true],
+  ["York / Weston / Downsview",705,true]]],
+ ["Peel",[
+  ["Mississauga · City Centre (Square One)",725,false],
+  ["Mississauga · Port Credit / Lakeview",835,false],
+  ["Mississauga · other",660,false],
+  ["Brampton",575,false]]],
+ ["York Region",[
+  ["Vaughan · VMC / Woodbridge",790,false],
+  ["Markham",765,false],
+  ["Richmond Hill",745,false],
+  ["Newmarket / Aurora",670,false]]],
+ ["Halton",[
+  ["Oakville",835,false],
+  ["Burlington",725,false],
+  ["Milton",650,false]]],
+ ["Durham",[
+  ["Pickering / Ajax",630,false],
+  ["Whitby / Oshawa",560,false]]]
+];
+const FLAT=[];AREAS.forEach(([r,list])=>list.forEach(([n,p,t])=>FLAT.push({region:r,name:n,psf:p,toronto:t})));
+const $=id=>document.getElementById(id);
+const fmt=n=>"$"+Math.round(n).toLocaleString("en-CA");
+const pct=n=>(n>0?"+":"")+(n*100).toFixed(1)+"%";
+
+const sel=$("area");
+AREAS.forEach(([r,list])=>{const g=document.createElement("optgroup");g.label=r;list.forEach(([n])=>{const o=document.createElement("option");o.value=FLAT.findIndex(a=>a.name===n);o.textContent=n;g.appendChild(o)});sel.appendChild(g)});
+
+const EXAMPLE={area:"0",psf:985,sqft:650,beds:"1",baths:"1",den:true,floor:24,view:"0.015",outdoor:"0",cond:"0",ph:false,corner:false,
+  year:2016,fee:520,park:"1",locker:"1",amen:true,transit:true,trend:-0.2,
+  comps:[["Example · 15 Fort York Blvd #2105",738000,640,2,true],["Example · 15 Fort York Blvd #1408",659000,620,4,false],["Example · 10 Navy Wharf Ct #3302",772000,690,5,true]]};
+const FIELDS=["area","psf","sqft","beds","baths","den","floor","view","outdoor","cond","ph","corner","year","fee","park","locker","amen","transit","trend"];
+
+function addComp(c=["","","",""]){
+  const tr=document.createElement("tr");
+  tr.innerHTML=`<td><input aria-label="Address" value="${String(c[0]).replace(/"/g,"&quot;")}"></td><td><input aria-label="Sold price" type="number" class="mono" value="${c[1]}"></td><td><input aria-label="Square feet" type="number" class="mono" value="${c[2]}"></td><td><input aria-label="Months ago" type="number" min="0" class="mono" value="${c[3]}"></td><td><input aria-label="Sold with parking" type="checkbox"${c[4]?" checked":""}></td><td class="cpsf">–</td><td><button type="button" class="x" aria-label="Remove comparable">×</button></td>`;
+  tr.querySelector(".x").onclick=()=>{tr.remove();calc()};
+  tr.querySelectorAll("input").forEach(i=>i.addEventListener("input",calc));
+  $("compRows").appendChild(tr);
+}
+function load(s){
+  FIELDS.forEach(k=>{const el=$(k);if(el.type==="checkbox")el.checked=!!s[k];else el.value=s[k]});
+  $("compRows").innerHTML="";(s.comps||[]).forEach(addComp);
+}
+function state(){
+  const s={};FIELDS.forEach(k=>{const el=$(k);s[k]=el.type==="checkbox"?el.checked:el.value});
+  s.comps=[...$("compRows").rows].map(r=>[...r.querySelectorAll("input")].map(i=>i.type==="checkbox"?i.checked:i.value));
+  return s;
+}
+function ltt(p,toronto){
+  const br=[[55000,.005],[250000,.01],[400000,.015],[2000000,.02],[Infinity,.025]];
+  let t=0,prev=0;for(const [cap,r] of br){if(p>prev){t+=(Math.min(p,cap)-prev)*r}prev=cap}
+  if(!toronto)return t;
+  let m=0;prev=0;const mb=[[55000,.005],[250000,.01],[400000,.015],[2000000,.02],[3000000,.025],[4000000,.035],[5000000,.045],[10000000,.055],[20000000,.065],[Infinity,.075]];
+  for(const [cap,r] of mb){if(p>prev){m+=(Math.min(p,cap)-prev)*r}prev=cap}
+  return t+m;
+}
+
+function calc(){
+  const s=state(), a=FLAT[+s.area];
+  const sqft=Math.max(250,+s.sqft||0), bench=+s.psf||a.psf;
+  const parkVal=a.toronto?(bench>=1000?65000:50000):(bench>=800?45000:35000);
+  // comparables: time-adjust, then size-normalise to subject using the same size curve
+  const sizeF=x=>Math.pow(x/650,-0.12);
+  let comps=[];
+  [...$("compRows").rows].forEach((r,i)=>{
+    const [,p,q,m]=s.comps[i].map(Number), withPark=s.comps[i][4];const cell=r.querySelector(".cpsf");
+    if(p>0&&q>0){const adj=(p-(withPark?parkVal:0))*Math.pow(1+(+s.trend||0)/100,m||0);const raw=adj/q;cell.textContent=fmt(raw);comps.push(raw/sizeF(q)*sizeF(650))}
+    else cell.textContent="–";
+  });
+  let base=bench,baseLabel="Area benchmark";
+  if(comps.length){
+    const avg=comps.reduce((x,y)=>x+y,0)/comps.length;
+    const w=comps.length>=3?.7:comps.length===2?.5:.3;
+    base=bench*(1-w)+avg*w;baseLabel=`Benchmark ${Math.round((1-w)*100)}% · comps ${Math.round(w*100)}%`;
+  }
+  const steps=[];
+  const sizeAdj=sizeF(sqft)-1;
+  let v=base*sqft;
+  steps.push([`${sqft.toLocaleString()} sq ft × ${fmt(base)}/sq ft`,v,null]);
+  const mult=(label,r)=>{if(!r)return;const d=v*r;v+=d;steps.push([label,d,r])};
+  mult(sqft<650?"Smaller unit premium per sq ft":"Larger unit discount per sq ft",sizeAdj);
+  const bedAdj=(+s.beds===0?-0.03:0)+(+s.beds>=2?0.01:0);
+  mult(+s.beds===0?"Studio layout":"Bedroom count",bedAdj);
+  mult("Den",s.den?0.02:0);
+  const bathAdj=({"1":0,"1.5":.015,"2":.03,"3":.04})[s.baths]||0;
+  mult("Extra bathroom(s)",(+s.beds===0||+s.beds===1)&&+s.baths>=2?bathAdj+.01:bathAdj);
+  const fl=+s.floor||1;mult(`Floor ${fl}`,Math.max(-0.03,Math.min(0.10,(fl-10)*0.003)));
+  mult("Penthouse level",s.ph?0.05:0);
+  mult("Corner unit",s.corner?0.02:0);
+  mult("View / exposure",+s.view);
+  mult("Outdoor space",+s.outdoor);
+  mult("Condition",+s.cond);
+  const age=new Date().getFullYear()-(+s.year||2015);
+  const ageAdj=age<=5?0.05:age<=15?0:age<=30?-0.06:-0.12;
+  mult(`Building age (${Math.max(0,age)} yrs)`,ageAdj);
+  mult("Limited amenities",s.amen?0:-0.02);
+  mult("Transit access",s.transit?0.02:0);
+  // maintenance fee capitalised at 6%, capped at ±10% of value
+  const typical=sqft*0.75, fee=+s.fee||typical;
+  let feeD=-(fee-typical)*12/0.06;feeD=Math.max(-0.1*v,Math.min(0.1*v,feeD));
+  if(Math.abs(feeD)>50){v+=feeD;steps.push([`Maintenance ${fmt(fee)}/mo vs typical ${fmt(typical)}`,feeD,null])}
+  const pk=+s.park;if(pk){const d=parkVal*pk*(pk>1?0.85:1);v+=d;steps.push([`Parking × ${pk}`,d,null])}
+  if(+s.locker){v+=6000;steps.push(["Locker",6000,null])}
+
+  const spread=comps.length>=3?0.05:comps.length?0.065:0.08;
+  const lo=v*(1-spread),hi=v*(1+spread);
+  $("out-val").textContent=fmt(Math.round(v/1000)*1000);
+  $("out-range").textContent=`Likely range ${fmt(Math.round(lo/1000)*1000)} – ${fmt(Math.round(hi/1000)*1000)}`;
+  $("out-lo").textContent=fmt(Math.round(lo/1000)*1000);$("out-hi").textContent=fmt(Math.round(hi/1000)*1000);
+  const conf=$("out-conf");
+  if(comps.length>=3){conf.textContent="Higher confidence · 3+ comparables";conf.style.color="var(--up)"}
+  else if(comps.length){conf.textContent="Medium confidence · add more comparables";conf.style.color="var(--accent)"}
+  else{conf.textContent="Benchmark only · add comparables";conf.style.color="var(--down)"}
+  $("out-psf").textContent=fmt(v/sqft);
+  $("out-base").textContent=fmt(base)+" ";
+  $("out-base").title=baseLabel;
+  $("out-ltt").textContent=fmt(ltt(v,a.toronto));
+  $("out-steps").innerHTML=steps.map(([l,d,r],i)=>`<tr><td>${l}${r?` <span class="mono" style="color:var(--muted)">${pct(r)}</span>`:""}${i===0?`<br><span style="color:var(--muted);font-size:12px">${baseLabel}</span>`:""}</td><td class="${i===0?"":d>=0?"pos":"neg"}">${i===0?fmt(d):(d>=0?"+":"−")+fmt(Math.abs(d))}</td></tr>`).join("");
+  try{localStorage.setItem("gta-condo",JSON.stringify(state()))}catch(e){}
+}
+
+$("area").addEventListener("change",()=>{$("psf").value=FLAT[+$("area").value].psf;calc()});
+$("f").addEventListener("input",e=>{if(e.target.id!=="area")calc()});
+$("f").addEventListener("change",calc);
+$("addComp").onclick=()=>{addComp();calc()};
+$("reset").onclick=()=>{load(EXAMPLE);calc()};
+
+let saved=null;try{saved=JSON.parse(localStorage.getItem("gta-condo"))}catch(e){}
+load(saved&&saved.area!==undefined?saved:EXAMPLE);calc();
+</script>
+</body>
+</html>
