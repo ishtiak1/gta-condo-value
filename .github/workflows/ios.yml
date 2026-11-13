@@ -1,0 +1,29 @@
+name: iOS app
+
+on:
+  push:
+    paths: ["ios/**", ".github/workflows/ios.yml"]
+  pull_request:
+    paths: ["ios/**", ".github/workflows/ios.yml"]
+  workflow_dispatch:
+
+jobs:
+  logic-tests-linux:
+    name: Valuation tests (Linux)
+    runs-on: ubuntu-latest
+    container: swift:6.0
+    steps:
+      - uses: actions/checkout@v4
+      - run: swift test --package-path ios/CondoValuationKit
+
+  app-build:
+    name: Tests and app build (macOS)
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - run: swift test --package-path ios/CondoValuationKit
+      - name: Build app for the iOS Simulator
+        run: |
+          xcodebuild -project ios/GTACondoValue.xcodeproj -scheme GTACondoValue \
+            -destination 'generic/platform=iOS Simulator' \
+            CODE_SIGNING_ALLOWED=NO build

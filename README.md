@@ -25,3 +25,7 @@ To host it free, enable GitHub Pages for this repo (Settings → Pages → deplo
 Area benchmarks are approximate 2025–26 resale averages for the unit alone, excluding parking. They are not a live feed. Update the `AREAS` table in `index.html`, or type over the benchmark in the page, using the latest [TRREB Market Watch](https://trreb.ca/market-data/market-watch/) figures.
 
 This is a planning estimate, not an appraisal. Confirm values with a REALTOR® CMA or a licensed appraiser.
+
+## iOS app
+
+A native SwiftUI version lives in [`ios/`](ios/README.md). Open `ios/GTACondoValue.xcodeproj` in Xcode 16 or later and press Run.
